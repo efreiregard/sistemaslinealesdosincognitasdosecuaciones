@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resolución Gráfica y Analítica de Sistemas 2x2</title>
+    <style>
+        :root {
+            --bg-color: #f4f6f9;
+            --card-bg: #ffffff;
+            --text-main: #2d3748;
+            --text-muted: #718096;
+            --primary: #4f46e5;
+            --primary-light: #e0e7ff;
+            --secondary: #06b6d4;
+            --secondary-light: #ecfeff;
+            --accent: #f59e0b;
+            --border-color: #e2e8f0;
+            --danger: #ef4444;
+            --success: #10b981;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        header h1 {
+            color: var(--primary);
+            font-size: 2rem;
+            margin-bottom: 8px;
+        }
+
+        header p {
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+
+        /* Layout */
+        .app-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            align-items: start;
+        }
+
+        @media (max-width: 1024px) {
+            .app-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Cards */
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            border: 1px solid var(--border-color);
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: var(--primary);
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        /* Inputs & Sliders */
+        .controls-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .equation-control {
+            background: var(--bg-color);
+            padding: 16px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .equation-control h3 {
+            font-size: 1rem;
+            margin-bottom: 12px;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .eq-color-1 { border-left: 4px solid var(--primary); }
+        .eq-color-2 { border-left: 4px solid var(--secondary); }
+
+        .control-group {
+            margin-bottom: 12px;
+        }
+
+        .control-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .control-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        input[type="range"] {
+            flex: 1;
+            accent-color: var(--primary);
+            height: 6px;
+            border-radius: 3px;
+            outline: none;
+        }
+
+        input[type="number"] {
+            width: 60px;
+            padding: 4px 8px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+
+        /* Math Display */
+        .system-display {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #1e1e2e;
+            color: #cdd6f4;
+            padding: 20px;
+            border-radius: 8px;
+            font-size: 1.4rem;
+            font-family: 'Cambria', 'Georgia', serif;
+            margin-bottom: 20px;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .system-bracket {
+            font-size: 3.5rem;
+            font-weight: 100;
+            margin-right: 10px;
+            user-select: none;
+            color: var(--accent);
+            line-height: 1;
+        }
+
+        .system-equations {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .equation-text-1 { color: #89b4fa; }
+        .equation-text-2 { color: #89dceb; }
+
+        /* Steps list */
+        .step-box {
+            background-color: var(--bg-color);
+            border-left: 4px solid var(--primary);
+            padding: 12px 16px;
+            margin-bottom: 12px;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.95rem;
+        }
+
+        .step-box h4 {
+            font-size: 1rem;
+            margin-bottom: 6px;
+            color: var(--primary);
+        }
+
+        .step-math {
+            font-family: 'Cambria', 'Georgia', serif;
+            font-size: 1.1rem;
+            background: rgba(0, 0, 0, 0.03);
+            padding: 6px 12px;
+            border-radius: 4px;
+            display: inline-block;
+            margin-top: 4px;
+            color: #1a202c;
+        }
+
+        /* Right Column Graphic Container */
+        .canvas-container {
+            position: relative;
+            width: 100%;
+            padding-bottom: 100%; /* 1:1 Aspect Ratio */
+            background-color: #111827;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #374151;
+        }
+
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Result pill */
+        .result-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+
+        .badge-success { background: #d1fae5; color: #065f46; }
+        .badge-warning { background: #fef3c7; color: #92400e; }
+        .badge-danger { background: #fee2e2; color: #991b1b; }
+
+        .system-type {
+            font-size: 1rem;
+            font-weight: bold;
+            text-align: center;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>Resolución de Sistemas Lineales 2x2</h1>
+            <p>Visualiza gráficamente y aprende el método de reducción en tiempo real paso a paso</p>
+        </header>
+
+        <div class="app-grid">
+            <!-- LEFT COLUMN: ALGEBRAIC & PROCESS -->
+            <div class="left-column">
+                <!-- Controls and Equation Input -->
+                <div class="card">
+                    <div class="card-title">Configuración del Sistema</div>
+                    <div class="controls-grid">
+                        <!-- Equation 1 -->
+                        <div class="equation-control eq-color-1">
+                            <h3>Ecuación 1 (Recta Azul)</h3>
+                            <div class="control-group">
+                                <div class="control-label">
+                                    <span>Coeficiente A (x)</span>
+                                    <span id="valA">1</span>
+                                </div>
+                                <div class="slider-container">
+                                    <input type="range" id="inputA" min="-10" max="10" step="1" value="1">
+                                    <input type="number" id="numA" min="-10" max="10" value="1">
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <div class="control-label">
+                                    <span>Coeficiente B (y)</span>
+                                    <span id="valB">1</span>
+                                </div>
+                                <div class="slider-container">
+                                    <input type="range" id="inputB" min="-10" max="10" step="1" value="1">
+                                    <input type="number" id="numB" min="-10" max="10" value="1">
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <div class="control-label">
+                                    <span>Término C (Independiente)</span>
+                                    <span id="valC">5</span>
+                                </div>
+                                <div class="slider-container">
+                                    <input type="range" id="inputC" min="-20" max="20" step="1" value="5">
+                                    <input type="number" id="numC" min="-20" max="20" value="5">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Equation 2 -->
+                        <div class="equation-control eq-color-2">
+                            <h3>Ecuación 2 (Recta Celeste)</h3>
+                            <div class="control-group">
+                                <div class="control-label">
+                                    <span>Coeficiente D (x)</span>
+                                    <span id="valD">2</span>
+                                </div>
+                                <div class="slider-container">
+                                    <input type="range" id="inputD" min="-10" max="10" step="1" value="2">
+                                    <input type="number" id="numD" min="-10" max="10" value="2">
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <div class="control-label">
+                                    <span>Coeficiente E (y)</span>
+                                    <span id="valE">-1</span>
+                                </div>
+                                <div class="slider-container">
+                                    <input type="range" id="inputE" min="-10" max="10" step="1" value="-1">
+                                    <input type="number" id="numE" min="-10" max="10" value="-1">
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <div class="control-label">
+                                    <span>Término F (Independiente)</span>
+                                    <span id="valF">4</span>
+                                </div>
+                                <div class="slider-container">
+                                    <input type="range" id="inputF" min="-20" max="20" step="1" value="4">
+                                    <input type="number" id="numF" min="-20" max="20" value="4">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Live Algebraic Expression -->
+                <div class="card">
+                    <div class="card-title">
+                        <span>Expresión Algebraica del Sistema</span>
+                        <div id="system-type-badge"></div>
+                    </div>
+                    <div class="system-display">
+                        <div class="system-bracket">{</div>
+                        <div class="system-equations">
+                            <div class="equation-text-1" id="disp-eq1">1x + 1y = 5</div>
+                            <div class="equation-text-2" id="disp-eq2">2x - 1y = 4</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step-by-step Reduction Method -->
+                <div class="card">
+                    <div class="card-title">Método de Reducción Paso a Paso</div>
+                    <div id="reduction-steps">
+                        <!-- Content generated dynamically -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT COLUMN: GRAPHIC PRESENTATION -->
+            <div class="right-column">
+                <div class="card">
+                    <div class="card-title">Representación Gráfica (Plano Cartesiano)</div>
+                    <div class="canvas-container">
+                        <canvas id="graphCanvas"></canvas>
+                    </div>
+                    <div style="margin-top: 15px; display: flex; justify-content: space-around; font-size: 0.9rem;">
+                        <div><span style="display:inline-block; width:12px; height:12px; background:#4f46e5; margin-right:5px; border-radius:2px;"></span> Recta 1 (Ec. 1)</div>
+                        <div><span style="display:inline-block; width:12px; height:12px; background:#06b6d4; margin-right:5px; border-radius:2px;"></span> Recta 2 (Ec. 2)</div>
+                        <div><span style="display:inline-block; width:12px; height:12px; background:#f59e0b; margin-right:5px; border-radius:50%;"></span> Punto de Intersección</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Setup elements
+        const inputs = {
+            A: { slider: document.getElementById('inputA'), num: document.getElementById('numA'), label: document.getElementById('valA') },
+            B: { slider: document.getElementById('inputB'), num: document.getElementById('numB'), label: document.getElementById('valB') },
+            C: { slider: document.getElementById('inputC'), num: document.getElementById('numC'), label: document.getElementById('valC') },
+            D: { slider: document.getElementById('inputD'), num: document.getElementById('numD'), label: document.getElementById('valD') },
+            E: { slider: document.getElementById('inputE'), num: document.getElementById('numE'), label: document.getElementById('valE') },
+            F: { slider: document.getElementById('inputF'), num: document.getElementById('numF'), label: document.getElementById('valF') }
+        };
+
+        const dispEq1 = document.getElementById('disp-eq1');
+        const dispEq2 = document.getElementById('disp-eq2');
+        const systemTypeBadge = document.getElementById('system-type-badge');
+        const reductionSteps = document.getElementById('reduction-steps');
+        
+        // Canvas configuration
+        const canvas = document.getElementById('graphCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Handle sync between sliders and number inputs
+        function initInputs() {
+            Object.keys(inputs).forEach(key => {
+                const ctrl = inputs[key];
+                ctrl.slider.addEventListener('input', (e) => {
+                    ctrl.num.value = e.target.value;
+                    ctrl.label.textContent = e.target.value;
+                    update();
+                });
+                ctrl.num.addEventListener('input', (e) => {
+                    let val = parseFloat(e.target.value) || 0;
+                    ctrl.slider.value = val;
+                    ctrl.label.textContent = val;
+                    update();
+                });
+            });
+        }
+
+        // Helper: Format equations elegantly
+        function formatEquation(a, b, c) {
+            let partX = "";
+            if (a !== 0) {
+                if (a === 1) partX = "x";
+                else if (a === -1) partX = "-x";
+                else partX = `${a}x`;
+            }
+
+            let partY = "";
+            if (b !== 0) {
+                let sign = b > 0 ? " + " : " - ";
+                if (partX === "") {
+                    sign = b > 0 ? "" : "-";
+                }
+                let coeff = Math.abs(b);
+                if (coeff === 1) {
+                    partY = `${sign}y`;
+                } else {
+                    partY = `${sign}${coeff}y`;
+                }
+            }
+
+            if (partX === "" && partY === "") {
+                return `0 = ${c}`;
+            }
+
+            return `${partX}${partY} = ${c}`;
+        }
+
+        // Greatest Common Divisor to format fractions nicely if needed
+        function gcd(x, y) {
+            x = Math.abs(x);
+            y = Math.abs(y);
+            while(y) {
+                var t = y;
+                y = x % y;
+                x = t;
+            }
+            return x;
+        }
+
+        function formatFraction(num, den) {
+            if (den < 0) {
+                num = -num;
+                den = -den;
+            }
+            const common = gcd(num, den);
+            num /= common;
+            den /= common;
+
+            if (den === 1) return `${num}`;
+            return `${num}/${den}`;
+        }
+
+        // Core logic: Calculate and render everything
+        function update() {
+            const A = parseInt(inputs.A.slider.value);
+            const B = parseInt(inputs.B.slider.value);
+            const C = parseInt(inputs.C.slider.value);
+            const D = parseInt(inputs.D.slider.value);
+            const E = parseInt(inputs.E.slider.value);
+            const F = parseInt(inputs.F.slider.value);
+
+            // 1. Update Algebraic Display
+            dispEq1.textContent = formatEquation(A, B, C);
+            dispEq2.textContent = formatEquation(D, E, F);
+
+            // 2. Solve the linear system (Cramer's rule/Determinant method)
+            // A*x + B*y = C
+            // D*x + E*y = F
+            const Det = A * E - B * D;
+            const DetX = C * E - B * F;
+            const DetY = A * F - C * D;
+
+            let systemType = "";
+            let intersection = null; // {x, y}
+
+            if (Det !== 0) {
+                systemType = "SCD"; // Sistema Compatible Determinado
+                const xVal = DetX / Det;
+                const yVal = DetY / Det;
+                intersection = { x: xVal, y: yVal };
+
+                systemTypeBadge.innerHTML = `<span class="result-badge badge-success">Solución Única (S.C.D.)</span>`;
+                generateStepsSCD(A, B, C, D, E, F, Det, DetX, DetY, xVal, yVal);
+            } else {
+                // If Det == 0, check if equations are proportional
+                // If they represent the same line: Infinite solutions (SCI)
+                // Otherwise: No solution (SI)
+                // DetX and DetY being 0 means they are linearly dependent including constant term
+                if (DetX === 0 && DetY === 0) {
+                    systemType = "SCI"; // Sistema Compatible Indeterminado
+                    systemTypeBadge.innerHTML = `<span class="result-badge badge-warning">Infinitas Soluciones (S.C.I.)</span>`;
+                    generateStepsSCI(A, B, C);
+                } else {
+                    systemType = "SI"; // Sistema Incompatible
+                    systemTypeBadge.innerHTML = `<span class="result-badge badge-danger">Sin Solución (S.I.)</span>`;
+                    generateStepsSI(A, B, C, D, E, F);
+                }
+            }
+
+            // Draw Graphic Solution
+            drawGraph(A, B, C, D, E, F, intersection);
+        }
+
+        // Generate Step-by-Step for Unique Solution
+        function generateStepsSCD(A, B, C, D, E, F, Det, DetX, DetY, xVal, yVal) {
+            let html = "";
+
+            // Step 1: Elija los coeficientes para eliminar.
+            // Para simplificar la explicación del método de reducción, eliminamos la 'y'.
+            // Para eliminar 'y', multiplicamos la ec. 1 por E y la ec. 2 por -B (o viceversa).
+            // Multiplier 1 = E, Multiplier 2 = -B
+            const m1 = E;
+            const m2 = -B;
+
+            html += `
+            <div class="step-box">
+                <h4>Paso 1: Preparar las ecuaciones para eliminar una incógnita (y)</h4>
+                <p>Para igualar los coeficientes de <strong>y</strong> con signos opuestos, multiplicamos la primera ecuación por <strong>${m1}</strong> y la segunda ecuación por <strong>${m2 > 0 ? '+' : ''}${m2}</strong>:</p>
+                <div style="margin-top: 8px;">
+                    <div>• (${A}x ${B >= 0 ? '+' : ''}${B}y = ${C}) × (${m1}) ➔ <span class="step-math">${A*m1}x ${B*m1 >= 0 ? '+' : ''}${B*m1}y = ${C*m1}</span></div>
+                    <div style="margin-top: 4px;">• (${D}x ${E >= 0 ? '+' : ''}${E}y = ${F}) × (${m2}) ➔ <span class="step-math">${D*m2}x ${E*m2 >= 0 ? '+' : ''}${E*m2}y = ${F*m2}</span></div>
+                </div>
+            </div>`;
+
+            // Step 2: Sumar las ecuaciones
+            const sumX = A*m1 + D*m2;
+            const sumConst = C*m1 + F*m2;
+            html += `
+            <div class="step-box">
+                <h4>Paso 2: Sumar ambas ecuaciones</h4>
+                <p>Al sumar verticalmente, el término con <strong>y</strong> se elimina:</p>
+                <div class="step-math">
+                    (${A*m1}x + ${D*m2}x) + (${B*m1 + E*m2}y) = ${C*m1} + ${F*m2} <br>
+                    ${sumX}x = ${sumConst}
+                </div>
+            </div>`;
+
+            // Step 3: Despejar la primera incógnita (x)
+            const fracX = formatFraction(sumConst, sumX);
+            html += `
+            <div class="step-box">
+                <h4>Paso 3: Resolver para x</h4>
+                <p>Despejamos la incógnita de la ecuación resultante:</p>
+                <div class="step-math">
+                    x = ${sumConst} / ${sumX} ${fracX !== (sumConst/sumX).toFixed(2) ? `≈ ${xVal.toFixed(2)}` : ''} ➔ <strong>x = ${fracX}</strong>
+                </div>
+            </div>`;
+
+            // Step 4: Sustituir x en una de las ecuaciones originales
+            // Let's use Eq 1: A*x + B*y = C -> B*y = C - A*x
+            let step4Html = "";
+            if (B !== 0) {
+                const substVal = A * xVal;
+                const rest = C - substVal;
+                const fracY = formatFraction(DetY, Det);
+                step4Html = `
+                <div class="step-box">
+                    <h4>Paso 4: Sustituir x en la primera ecuación para hallar y</h4>
+                    <p>Reemplazamos <strong>x = ${fracX}</strong> en: <span style="font-family: serif;">${A}x ${B >= 0 ? '+' : ''}${B}y = ${C}</span></p>
+                    <div class="step-math">
+                        ${A}(${fracX}) ${B >= 0 ? '+' : ''}${B}y = ${C} <br>
+                        ${A*xVal.toFixed(2)} ${B >= 0 ? '+' : ''}${B}y = ${C} <br>
+                        ${B}y = ${C} - (${(A*xVal).toFixed(2)}) <br>
+                        ${B}y = ${rest.toFixed(2)} <br>
+                        y = ${fracY} ${fracY !== (yVal).toFixed(2) ? `≈ ${yVal.toFixed(2)}` : ''} ➔ <strong>y = ${fracY}</strong>
+                    </div>
+                </div>`;
+            } else {
+                // If B is 0, use Eq 2: D*x + E*y = F -> E*y = F - D*x
+                const substVal = D * xVal;
+                const rest = F - substVal;
+                const fracY = formatFraction(DetY, Det);
+                step4Html = `
+                <div class="step-box">
+                    <h4>Paso 4: Sustituir x en la segunda ecuación para hallar y</h4>
+                    <p>Reemplazamos <strong>x = ${fracX}</strong> en: <span style="font-family: serif;">${D}x ${E >= 0 ? '+' : ''}${E}y = ${F}</span></p>
+                    <div class="step-math">
+                        ${D}(${fracX}) ${E >= 0 ? '+' : ''}${E}y = ${F} <br>
+                        ${(D*xVal).toFixed(2)} ${E >= 0 ? '+' : ''}${E}y = ${F} <br>
+                        ${E}y = ${F} - (${(D*xVal).toFixed(2)}) <br>
+                        ${E}y = ${rest.toFixed(2)} <br>
+                        y = ${fracY} ${fracY !== (yVal).toFixed(2) ? `≈ ${yVal.toFixed(2)}` : ''} ➔ <strong>y = ${fracY}</strong>
+                    </div>
+                </div>`;
+            }
+            html += step4Html;
+
+            // Final Result
+            html += `
+            <div class="step-box" style="border-left-color: var(--success); background-color: rgba(16, 185, 129, 0.08);">
+                <h4>Solución Final</h4>
+                <p>El punto donde se cortan ambas rectas es:</p>
+                <div class="step-math" style="background: white;">
+                    <strong>P = (${formatFraction(DetX, Det)}, ${formatFraction(DetY, Det)})</strong> o en decimales <strong>(${xVal.toFixed(2)}, ${yVal.toFixed(2)})</strong>
+                </div>
+            </div>`;
+
+            reductionSteps.innerHTML = html;
+        }
+
+        // Generate Step-by-Step for Coincident Lines
+        function generateStepsSCI(A, B, C) {
+            reductionSteps.innerHTML = `
+            <div class="step-box" style="border-left-color: var(--accent);">
+                <h4>Rectas Coincidentes (Infinitas Soluciones)</h4>
+                <p>Al intentar aplicar el método de reducción, ambas ecuaciones se anulan mutuamente dando lugar a una identidad verdadera como:</p>
+                <div class="step-math">0 = 0</div>
+                <p style="margin-top: 10px;">Esto ocurre porque la segunda ecuación es un múltiplo exacto de la primera. Ambas ecuaciones describen exactamente la misma recta, por lo que todos los puntos de la recta son soluciones del sistema.</p>
+            </div>`;
+        }
+
+        // Generate Step-by-Step for Parallel Lines
+        function generateStepsSI(A, B, C, D, E, F) {
+            reductionSteps.innerHTML = `
+            <div class="step-box" style="border-left-color: var(--danger);">
+                <h4>Rectas Paralelas (Sin Solución)</h4>
+                <p>Al intentar eliminar una de las variables usando el método de reducción, se llega a una inconsistencia lógica matemática del tipo:</p>
+                <div class="step-math">0 = K (siendo K un número distinto de 0)</div>
+                <p style="margin-top: 10px;">Geométricamente, esto significa que las rectas corren de manera paralela con la misma pendiente pero diferente ordenada al origen, por lo que jamás llegarán a cortarse.</p>
+            </div>`;
+        }
+
+        // Setup Canvas rendering
+        function resizeCanvas() {
+            // Match canvas coordinates with display coordinates 1:1
+            const rect = canvas.getBoundingClientRect();
+            canvas.width = rect.width;
+            canvas.height = rect.height;
+            update();
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+
+        // Draw coordinate plane, axes, lines and intersection
+        function drawGraph(A, B, C, D, E, F, intersection) {
+            const width = canvas.width;
+            const height = canvas.height;
+            
+            // Clear canvas
+            ctx.clearRect(0, 0, width, height);
+
+            // Origin is centered
+            const originX = width / 2;
+            const originY = height / 2;
+            
+            // Grid configuration: 1 unit = 'scale' pixels
+            const scale = Math.min(width, height) / 24; // Visual span of ~ -12 to 12
+
+            // Draw grid lines
+            ctx.strokeStyle = '#27273a';
+            ctx.lineWidth = 1;
+
+            // Vertical grid lines
+            for (let x = -20; x <= 20; x++) {
+                const screenX = originX + x * scale;
+                ctx.beginPath();
+                ctx.moveTo(screenX, 0);
+                ctx.lineTo(screenX, height);
+                ctx.stroke();
+            }
+
+            // Horizontal grid lines
+            for (let y = -20; y <= 20; y++) {
+                const screenY = originY - y * scale; // invert Y coordinate for standard Cartesian
+                ctx.beginPath();
+                ctx.moveTo(0, screenY);
+                ctx.lineTo(width, screenY);
+                ctx.stroke();
+            }
+
+            // Draw X and Y Axes
+            ctx.strokeStyle = '#64748b';
+            ctx.lineWidth = 2;
+            
+            // X Axis
+            ctx.beginPath();
+            ctx.moveTo(0, originY);
+            ctx.lineTo(width, originY);
+            ctx.stroke();
+
+            // Y Axis
+            ctx.beginPath();
+            ctx.moveTo(originX, 0);
+            ctx.lineTo(originX, height);
+            ctx.stroke();
+
+            // Draw axis labels
+            ctx.fillStyle = '#94a3b8';
+            ctx.font = '12px monospace';
+            ctx.fillText('X', width - 15, originY - 8);
+            ctx.fillText('Y', originX + 8, 15);
+
+            // Draw axis numbers
+            for (let i = -10; i <= 10; i++) {
+                if (i === 0) continue;
+                // X labels
+                ctx.fillText(i, originX + i * scale - 4, originY + 15);
+                // Y labels
+                ctx.fillText(i, originX - 18, originY - i * scale + 4);
+            }
+
+            // Draw Recta 1: Ax + By = C
+            drawLine(A, B, C, '#4f46e5', originX, originY, scale, width, height);
+
+            // Draw Recta 2: Dx + Ey = F
+            drawLine(D, E, F, '#06b6d4', originX, originY, scale, width, height);
+
+            // Draw Intersection point if exists
+            if (intersection) {
+                const interX = originX + intersection.x * scale;
+                const interY = originY - intersection.y * scale;
+
+                // Outer animated ring
+                ctx.strokeStyle = '#f59e0b';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.arc(interX, interY, 8, 0, 2 * Math.PI);
+                ctx.stroke();
+
+                // Inner solid dot
+                ctx.fillStyle = '#f59e0b';
+                ctx.beginPath();
+                ctx.arc(interX, interY, 4, 0, 2 * Math.PI);
+                ctx.fill();
+
+                // Labeled coordinate
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 12px sans-serif';
+                ctx.backgroundColor = '#1e293b';
+                const coordText = `(${intersection.x.toFixed(1)}, ${intersection.y.toFixed(1)})`;
+                ctx.fillText(coordText, interX + 12, interY - 8);
+            }
+        }
+
+        // Draw standard line on Cartesian plane helper
+        function drawLine(a, b, c, color, originX, originY, scale, width, height) {
+            // Case where coefficients are both zero (invalid line)
+            if (a === 0 && b === 0) return;
+
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+
+            if (b !== 0) {
+                // We can calculate Y for edges of canvas
+                // Screen X goes from 0 to width.
+                // Cartesian x goes from -originX/scale to (width - originX)/scale
+                const minCartX = -originX / scale;
+                const maxCartX = (width - originX) / scale;
+
+                const cartY1 = (c - a * minCartX) / b;
+                const cartY2 = (c - a * maxCartX) / b;
+
+                const screenY1 = originY - cartY1 * scale;
+                const screenY2 = originY - cartY2 * scale;
+
+                ctx.moveTo(0, screenY1);
+                ctx.lineTo(width, screenY2);
+            } else {
+                // Vertical line: x = c / a
+                const cartX = c / a;
+                const screenX = originX + cartX * scale;
+
+                ctx.moveTo(screenX, 0);
+                ctx.lineTo(screenX, height);
+            }
+            ctx.stroke();
+        }
+
+        // Initialize App
+        initInputs();
+        setTimeout(resizeCanvas, 100); // Wait for styling rendering to accurately map size
+    </script>
+</body>
+</html>
